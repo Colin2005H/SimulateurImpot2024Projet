@@ -194,4 +194,49 @@ public class TestsSimulateur {
         assertEquals(   Integer.valueOf(impotAttendu), simulateur.getImpotSurRevenuNet());
     }
 
+    // Test direct de la méthode getRevenuFiscalReference() via l'adaptateur
+    @DisplayName("Test du revenu fiscal de référence")
+    @org.junit.jupiter.api.Test
+    public void testGetRevenuFiscalReference() {
+        // Arrange : célibataire, 20 000€ de revenu, pas d'enfant
+        simulateur.setRevenusNetDeclarant1(20000);
+        simulateur.setRevenusNetDeclarant2(0);
+        simulateur.setSituationFamiliale(SituationFamiliale.CELIBATAIRE);
+        simulateur.setNbEnfantsACharge(0);
+        simulateur.setNbEnfantsSituationHandicap(0);
+        simulateur.setParentIsole(false);
+
+        // Act
+        simulateur.calculImpotSurRevenuNet();
+        // Abattement attendu : 2000 (10% de 20 000)
+        double attendu = 20000 - 2000;
+        // Assert
+        assertEquals(attendu, simulateur.getRevenuFiscalReference(), 0.01);
+    }
+
+    // Test paramétré du revenu fiscal de référence
+    @DisplayName("Test paramétré du revenu fiscal de référence")
+    @ParameterizedTest
+    @MethodSource("donneesRevenuFiscalReference")
+    public void testParametreGetRevenuFiscalReference(int revenuNet, String situationFamiliale, int abattementAttendu, int revenuFiscalReferenceAttendu) {
+        simulateur.setRevenusNetDeclarant1(revenuNet);
+        simulateur.setRevenusNetDeclarant2(0);
+        simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
+        simulateur.setNbEnfantsACharge(0);
+        simulateur.setNbEnfantsSituationHandicap(0);
+        simulateur.setParentIsole(false);
+        simulateur.calculImpotSurRevenuNet();
+        assertEquals(abattementAttendu, simulateur.getAbattement());
+        assertEquals(revenuFiscalReferenceAttendu, simulateur.getRevenuFiscalReference());
+    }
+
+    static Stream<Arguments> donneesRevenuFiscalReference(){
+        return Stream.of(
+            // revenuNet, situation, abattement attendu, revenu fiscal attendu
+            Arguments.of(4900, "CELIBATAIRE", 495, 4405), // abattement minimum
+            Arguments.of(12000, "CELIBATAIRE", 1200, 10800), // abattement 10%
+            Arguments.of(200000, "CELIBATAIRE", 14171, 185829) // abattement maximum
+        );
+    }
+
 }
