@@ -239,4 +239,106 @@ public class TestsSimulateur {
         );
     }
 
+    // Tests paramétrés pour la méthode getImpotAvantDecote()
+    @DisplayName("Tests paramétrés de l'impôt avant décote")
+    @ParameterizedTest
+    @MethodSource("donneesImpotAvantDecote")
+    public void testParametreGetImpotAvantDecote(int revenuNet1, int revenuNet2, String situationFamiliale, 
+                                               int nbEnfants, int nbEnfantsHandicap, boolean parentIsole, int impotAvantDecoteAttendu){
+        // Arrange
+        simulateur.setRevenusNetDeclarant1(revenuNet1);
+        simulateur.setRevenusNetDeclarant2(revenuNet2);
+        simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
+        simulateur.setNbEnfantsACharge(nbEnfants);
+        simulateur.setNbEnfantsSituationHandicap(nbEnfantsHandicap);
+        simulateur.setParentIsole(parentIsole);
+        
+        // Act
+        simulateur.calculImpotSurRevenuNet();
+        
+        // Assert
+        assertEquals(impotAvantDecoteAttendu, simulateur.getImpotAvantDecote());
+    }
+    
+    static Stream<Arguments> donneesImpotAvantDecote() {
+        return Stream.of(
+            // revenuNet1, revenuNet2, situation, nbEnfants, nbEnfantsHandicap, parentIsole, impotAvantDecoteAttendu
+            Arguments.of(25000, 0, "CELIBATAIRE", 0, 0, false, 1233), // célibataire 
+            Arguments.of(40000, 30000, "MARIE", 2,0, false, 3203),   // couple marié avec 2 enfants
+            Arguments.of(60000, 0, "DIVORCE", 1, 0, true, 5968),      // divorcé parent isolé
+            Arguments.of(80000, 0, "CELIBATAIRE", 0, 0, false, 14886) // revenus élevés
+        );
+    }
+
+    // Tests paramétrés pour la méthode getContribExceptionnelle()
+    @DisplayName("Tests paramétrés de la contribution exceptionnelle sur les hauts revenus")
+    @ParameterizedTest
+    @MethodSource("donneesContribExceptionnelle")
+    public void testParametreGetContribExceptionnelle(int revenuNet1, int revenuNet2, String situationFamiliale, 
+                                               int nbEnfants,int nbEnfantsHandicap, boolean parentIsole, double contribExceptionnelleAttendue) {
+        // Arrange
+        simulateur.setRevenusNetDeclarant1(revenuNet1);
+        simulateur.setRevenusNetDeclarant2(revenuNet2);
+        simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
+        simulateur.setNbEnfantsACharge(nbEnfants);
+        simulateur.setNbEnfantsSituationHandicap(nbEnfantsHandicap);
+        simulateur.setParentIsole(parentIsole);
+        
+        // Act
+        simulateur.calculImpotSurRevenuNet();
+        
+        // Assert
+        assertEquals(contribExceptionnelleAttendue, simulateur.getContribExceptionnelle(), 0.01);
+    }
+    
+    static Stream<Arguments> donneesContribExceptionnelle() {
+        return Stream.of(
+            // revenuNet1, revenuNet2, situation, nbEnfants, nbEnfantsHandicap, parentIsole, contribExceptionnelleAttendue
+            Arguments.of(200000, 0,"CELIBATAIRE", 0, 0, false, 0.0), // juste en dessous du seuil
+            Arguments.of(300000, 0, "CELIBATAIRE", 0, 0,false, 1075.0), // contribution pour revenu > seuil
+            Arguments.of(600000, 0, "CELIBATAIRE", 0, 0, false, 10933.0), // contribution pour revenu élevé
+            Arguments.of(300000, 300000, "MARIE", 0, 0, false, 2150.0), // couple avec hauts revenus
+            Arguments.of(100000, 0, "CELIBATAIRE", 0, 0, false, 0.0) // en dessous du seuil
+        );
+    }
+
+    // Tests paramétrés pour la méthode getDecote()
+    @DisplayName("Tests paramétrés du calcul de la décote")
+    @ParameterizedTest
+    @MethodSource("donneesDecote")
+    public void testParametreGetDecote(int revenuNet1, int revenuNet2, String situationFamiliale, 
+                                       int nbEnfants, int nbEnfantsHandicap, boolean parentIsole, int decoteAttendue) {
+        // Arrange
+        simulateur.setRevenusNetDeclarant1(revenuNet1);
+        simulateur.setRevenusNetDeclarant2(revenuNet2);
+        simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
+        simulateur.setNbEnfantsACharge(nbEnfants);
+        simulateur.setNbEnfantsSituationHandicap(nbEnfantsHandicap);
+        simulateur.setParentIsole(parentIsole);
+        
+        // Act
+        simulateur.calculImpotSurRevenuNet();
+        
+        // Assert
+        assertEquals(decoteAttendue, simulateur.getDecote());
+    }
+    
+    static Stream<Arguments> donneesDecote() {
+        return Stream.of(
+            // revenuNet1, revenuNet2, situation, nbEnfants, nbEnfantsHandicap, parentIsole, decoteAttendue
+            //Célibataire avec impôt inférieur au seuil (1929€) 
+            Arguments.of(20000, 0, "CELIBATAIRE", 0, 0, false, 539),
+            
+            // Célibataire avec impôt supérieur au seuil
+            Arguments.of(35000, 0, "CELIBATAIRE", 0, 0, false, 0),
+            
+            //Couple avec impôt inférieur au seuil (3191€)
+            Arguments.of(30000, 5000, "MARIE", 0, 0, false, 980),
+            
+            // Couple avec impôt supérieur au seuil
+            Arguments.of(40000, 20000, "MARIE", 0, 0, false, 0)
+            
+        );
+    }
+
 }
