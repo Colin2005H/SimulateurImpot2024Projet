@@ -13,6 +13,7 @@ public interface ICalculateurImpot2024{
      * 
      * @param foyerFiscal Le foyer fiscal pour lequel calculer l'impôt
      * @return Le résultat détaillé du calcul de l'impôt
+     * @throws IllegalArgumentException si le foyer fiscal n'est pas valide
      */
     ResultatCalculImpot calculerImpot(FoyerFiscal foyerFiscal);
     
