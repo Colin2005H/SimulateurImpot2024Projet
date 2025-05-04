@@ -126,4 +126,9 @@ public final class AdaptateurSimulateur implements ICalculateurImpot {
     public int getImpotSurRevenuNet() {
         return (int) simulateur.getImpotNet();
     }
+    
+    @Override
+    public void printResultatSimulation() {
+    	simulateur.calculImpot(revenusNetDecl1, revenusNetDecl2, situationFamiliale, nbEnfantsSituationHandicap, nbEnfantsACharge, parentIsole);
+    }
 }

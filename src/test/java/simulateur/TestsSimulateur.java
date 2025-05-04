@@ -9,10 +9,13 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Classe de test abstraite pour les implémentations du calculateur d'impôt.
@@ -35,7 +38,7 @@ public abstract class TestsSimulateur {
                 Arguments.of(24000, "MARIE", 3, 1, false, 4.5),
                 Arguments.of(24000, "DIVORCE", 2, 0, true, 2.5),
                 Arguments.of(24000, "VEUF", 3, 0, true, 4.5)
-                );
+        );
     }
 
     // COUVERTURE EXIGENCE : EXG_IMPOT_03
@@ -337,5 +340,40 @@ public abstract class TestsSimulateur {
             Arguments.of(40000, 20000, "MARIE", 0, 0, false, 0)
             
         );
+    }
+    
+    @DisplayName("Test de l'affichage des résultats")
+    @ParameterizedTest
+    @MethodSource("donneesAffichage")
+    public void testAffichageResultat(int revenuNet1, int revenuNet2, String situationFamiliale, 
+            int nbEnfants, int nbEnfantsHandicap, boolean parentIsole, String affichageAttendu) {
+    	// Arrange
+        ICalculateurImpot simulateur = getSimulateur();
+        simulateur.setRevenusNetDeclarant1(revenuNet1);
+        simulateur.setRevenusNetDeclarant2(revenuNet2);
+        simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
+        simulateur.setNbEnfantsACharge(nbEnfants);
+        simulateur.setNbEnfantsSituationHandicap(nbEnfantsHandicap);
+        simulateur.setParentIsole(parentIsole);
+        
+		simulateur.calculImpotSurRevenuNet();
+		
+		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(outContent));
+		String expectedOutput  = affichageAttendu;
+		  
+		// Act
+		
+		simulateur.printResultatSimulation();
+		
+		// Assert
+	    assertTrue(outContent.toString().contains(expectedOutput));
+    }
+    
+    static Stream<Arguments> donneesAffichage() {
+    	return Stream.of(
+                // revenuNet1, revenuNet2, situation, nbEnfants, nbEnfantsHandicap, parentIsole, element d'affichage attendu
+				Arguments.of(20000, 0, "CELIBATAIRE", 0, 0, false, "Impôt sur le revenu net final :")
+    			);
     }
 }

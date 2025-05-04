@@ -100,5 +100,10 @@ public interface ICalculateurImpot {
      * @return L'impôt sur le revenu net
      */
     int getImpotSurRevenuNet();
+    
+    /**
+     * Affiche le résultat du calcul d'impôt
+     */
+    void printResultatSimulation();
 
 }

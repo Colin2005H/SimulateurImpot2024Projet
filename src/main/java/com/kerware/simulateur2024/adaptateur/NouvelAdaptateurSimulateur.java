@@ -255,4 +255,12 @@ public final class NouvelAdaptateurSimulateur implements ICalculateurImpot {
         }
         return resultat.getImpotNet();
     }
+
+	@Override
+	public void printResultatSimulation() {
+        if (resultat == null) {
+            throw new IllegalStateException("Aucun calcul n'a été effectué");
+        }
+		System.out.println(resultat.toString());
+	}
 }
