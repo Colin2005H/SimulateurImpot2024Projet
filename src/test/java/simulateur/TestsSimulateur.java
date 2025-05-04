@@ -2,27 +2,27 @@ package simulateur;
 
 import com.kerware.simulateur.ICalculateurImpot;
 import com.kerware.simulateur.SituationFamiliale;
-import com.kerware.simulateur2024.adaptateur.NouvelAdaptateurSimulateur;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TestsSimulateur {
+/**
+ * Classe de test abstraite pour les implémentations du calculateur d'impôt.
+ */
+public abstract class TestsSimulateur {
 
-    private static ICalculateurImpot simulateur;
-
-    @BeforeAll
-    public static void setUp() {
-        simulateur = new NouvelAdaptateurSimulateur();
-    }
+    /**
+     * Méthode abstraite que les sous-classes doivent implémenter pour tester le simulateur.
+     */
+    protected abstract ICalculateurImpot getSimulateur();
 
     public static Stream<Arguments> donneesPartsFoyerFiscal() {
         return Stream.of(
@@ -36,7 +36,6 @@ public class TestsSimulateur {
                 Arguments.of(24000, "DIVORCE", 2, 0, true, 2.5),
                 Arguments.of(24000, "VEUF", 3, 0, true, 4.5)
                 );
-
     }
 
     // COUVERTURE EXIGENCE : EXG_IMPOT_03
@@ -47,6 +46,7 @@ public class TestsSimulateur {
                                    int nbEnfantsSituationHandicap, boolean parentIsole, double nbPartsAttendu) {
 
         // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1( revenuNetDeclarant1 );
         simulateur.setRevenusNetDeclarant2( 0);
         simulateur.setSituationFamiliale( SituationFamiliale.valueOf(situationFamiliale) );
@@ -58,10 +58,8 @@ public class TestsSimulateur {
         simulateur.calculImpotSurRevenuNet();
 
         // Assert
-        assertEquals(   nbPartsAttendu, simulateur.getNbPartsFoyerFiscal());
-
+        assertEquals(nbPartsAttendu, simulateur.getNbPartsFoyerFiscal());
     }
-
 
     public static Stream<Arguments> donneesAbattementFoyerFiscal() {
         return Stream.of(
@@ -69,7 +67,6 @@ public class TestsSimulateur {
                 Arguments.of(12000, "CELIBATAIRE", 0, 0, false, 1200), // 10 %
                 Arguments.of(200000, "CELIBATAIRE", 0, 0, false, 14171) // > 14171 => 14171
         );
-
     }
 
     // COUVERTURE EXIGENCE : EXG_IMPOT_03
@@ -80,6 +77,7 @@ public class TestsSimulateur {
                                    int nbEnfantsSituationHandicap, boolean parentIsole, int abattementAttendu) {
 
         // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1( revenuNetDeclarant1 );
         simulateur.setRevenusNetDeclarant2( 0);
         simulateur.setSituationFamiliale( SituationFamiliale.valueOf(situationFamiliale) );
@@ -91,9 +89,8 @@ public class TestsSimulateur {
         simulateur.calculImpotSurRevenuNet();
 
         // Assert
-        assertEquals(   abattementAttendu, simulateur.getAbattement());
+        assertEquals(abattementAttendu, simulateur.getAbattement());
     }
-
 
     public static Stream<Arguments> donneesRevenusFoyerFiscal() {
         return Stream.of(
@@ -103,7 +100,6 @@ public class TestsSimulateur {
                 Arguments.of(95000, "CELIBATAIRE", 0, 0, false, 19284), // 41%
                 Arguments.of(200000, "CELIBATAIRE", 0, 0, false, 60768) // 45%
         );
-
     }
 
     // COUVERTURE EXIGENCE : EXG_IMPOT_04
@@ -114,6 +110,7 @@ public class TestsSimulateur {
                                 int nbEnfantsSituationHandicap, boolean parentIsole, int impotAttendu) {
 
         // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1( revenuNet );
         simulateur.setRevenusNetDeclarant2( 0);
         simulateur.setSituationFamiliale( SituationFamiliale.valueOf(situationFamiliale) );
@@ -125,10 +122,8 @@ public class TestsSimulateur {
         simulateur.calculImpotSurRevenuNet();
 
         // Assert
-        assertEquals(   impotAttendu, simulateur.getImpotSurRevenuNet());
+        assertEquals(impotAttendu, simulateur.getImpotSurRevenuNet());
     }
-
-
 
     public static Stream<Arguments> donneesRobustesse() {
         return Stream.of(
@@ -148,13 +143,13 @@ public class TestsSimulateur {
 
     // COUVERTURE EXIGENCE : Robustesse
     @DisplayName("Tests de robustesse avec des valeurs interdites")
-
     @ParameterizedTest( name ="Test avec revenuNetDeclarant1={0}, revenuDeclarant2={1}, situationFamiliale={2}, nbEnfantsACharge={3}, nbEnfantsSituationHandicap={4}, parentIsole={5}")
     @MethodSource( "donneesRobustesse" )
-    public void testRobustesse( int revenuNetDeclarant1, int revenuNetDeclarant2 , String situationFamiliale, int nbEnfantsACharge,
+    public void testRobustesse( int revenuNetDeclarant1, int revenuNetDeclarant2, String situationFamiliale, int nbEnfantsACharge,
                                        int nbEnfantsSituationHandicap, boolean parentIsole) {
 
         // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1( revenuNetDeclarant1 );
         simulateur.setRevenusNetDeclarant2( revenuNetDeclarant2 );
         if ( situationFamiliale == null )
@@ -166,9 +161,7 @@ public class TestsSimulateur {
         simulateur.setParentIsole( parentIsole );
 
         // Act & Assert
-        assertThrows( IllegalArgumentException.class,  () -> { simulateur.calculImpotSurRevenuNet();} );
-
-
+        assertThrows( IllegalArgumentException.class, () -> { simulateur.calculImpotSurRevenuNet();} );
     }
 
     // AVEC D'AUTRES IDEES DE TESTS
@@ -180,6 +173,7 @@ public class TestsSimulateur {
                                        int nbEnfantsSituationHandicap, boolean parentIsole, int impotAttendu) {
 
        // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1( revenuNetDeclarant1 );
         simulateur.setRevenusNetDeclarant2( revenuNetDeclarant2 );
         simulateur.setSituationFamiliale( SituationFamiliale.valueOf( situationFamiliale) );
@@ -191,14 +185,15 @@ public class TestsSimulateur {
         simulateur.calculImpotSurRevenuNet();
 
         // Assert
-        assertEquals(   Integer.valueOf(impotAttendu), simulateur.getImpotSurRevenuNet());
+        assertEquals(Integer.valueOf(impotAttendu), simulateur.getImpotSurRevenuNet());
     }
 
     // Test direct de la méthode getRevenuFiscalReference() via l'adaptateur
     @DisplayName("Test du revenu fiscal de référence")
-    @org.junit.jupiter.api.Test
+    @Test
     public void testGetRevenuFiscalReference() {
         // Arrange : célibataire, 20 000€ de revenu, pas d'enfant
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1(20000);
         simulateur.setRevenusNetDeclarant2(0);
         simulateur.setSituationFamiliale(SituationFamiliale.CELIBATAIRE);
@@ -208,7 +203,7 @@ public class TestsSimulateur {
 
         // Act
         simulateur.calculImpotSurRevenuNet();
-        // Abattement attendu : 2000 (10% de 20 000)
+
         double attendu = 20000 - 2000;
         // Assert
         assertEquals(attendu, simulateur.getRevenuFiscalReference(), 0.01);
@@ -219,6 +214,7 @@ public class TestsSimulateur {
     @ParameterizedTest
     @MethodSource("donneesRevenuFiscalReference")
     public void testParametreGetRevenuFiscalReference(int revenuNet, String situationFamiliale, int abattementAttendu, int revenuFiscalReferenceAttendu) {
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1(revenuNet);
         simulateur.setRevenusNetDeclarant2(0);
         simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
@@ -246,6 +242,7 @@ public class TestsSimulateur {
     public void testParametreGetImpotAvantDecote(int revenuNet1, int revenuNet2, String situationFamiliale, 
                                                int nbEnfants, int nbEnfantsHandicap, boolean parentIsole, int impotAvantDecoteAttendu){
         // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1(revenuNet1);
         simulateur.setRevenusNetDeclarant2(revenuNet2);
         simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
@@ -277,6 +274,7 @@ public class TestsSimulateur {
     public void testParametreGetContribExceptionnelle(int revenuNet1, int revenuNet2, String situationFamiliale, 
                                                int nbEnfants,int nbEnfantsHandicap, boolean parentIsole, double contribExceptionnelleAttendue) {
         // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1(revenuNet1);
         simulateur.setRevenusNetDeclarant2(revenuNet2);
         simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
@@ -309,6 +307,7 @@ public class TestsSimulateur {
     public void testParametreGetDecote(int revenuNet1, int revenuNet2, String situationFamiliale, 
                                        int nbEnfants, int nbEnfantsHandicap, boolean parentIsole, int decoteAttendue) {
         // Arrange
+        ICalculateurImpot simulateur = getSimulateur();
         simulateur.setRevenusNetDeclarant1(revenuNet1);
         simulateur.setRevenusNetDeclarant2(revenuNet2);
         simulateur.setSituationFamiliale(SituationFamiliale.valueOf(situationFamiliale));
@@ -340,5 +339,4 @@ public class TestsSimulateur {
             
         );
     }
-
 }
