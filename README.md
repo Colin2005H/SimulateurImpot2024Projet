@@ -44,6 +44,10 @@ Les exigences métier sont renseignées en commentaire dans le code
 - Pas d'erreurs/avertissements lors de l'analyse statique par CheckStyle
 - Code adaptable et modifiable facilement dans le futur
 
+## Modification apportées
+- Une fabrique à simulateur pour permettre de créer les versions futures
+- TestSimulateur abstract pour pouvoir effectuer les tests sur l'ancien et le nouveau simulateur simultanément et comparer les résultats
+
 ## Mise à jour pour l'année 2025
 Pour adapter le simulateur à l'année 2025, il suffira de :
 1. Mettre à jour les paramètres du barème dans `BaremeFiscalFactory.creerBareme2025()`
