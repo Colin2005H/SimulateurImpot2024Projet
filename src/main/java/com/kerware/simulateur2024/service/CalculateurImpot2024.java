@@ -18,7 +18,7 @@ public class CalculateurImpot2024 implements ICalculateurImpot2024 {
      * Constructeur utilisant le barème fiscal par défaut.
      */
     public CalculateurImpot2024() {
-        this(BaremeFiscalFactory.creerBareme2024());
+        this(BaremeFiscalFabrique.creerBareme2024());
     }
     
     /**

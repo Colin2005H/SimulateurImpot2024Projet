@@ -5,7 +5,7 @@ import com.kerware.simulateur2024.modele.BaremeFiscal;
 /**
  * Fabrique de barèmes fiscaux permettant de le mettre à jour pour les années suivantes.
  */
-public class BaremeFiscalFactory {
+public class BaremeFiscalFabrique {
     
     /**
      * 
