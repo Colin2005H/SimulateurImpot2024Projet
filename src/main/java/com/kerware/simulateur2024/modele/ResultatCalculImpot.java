@@ -2,20 +2,28 @@ package com.kerware.simulateur2024.modele;
 
 /**
  * Stocke les différentes valeurs calculées pour un foyer fiscal.
+ * Cette classe n'est pas conçue pour être étendue.
  */
 public final class ResultatCalculImpot {
-
+    /** Foyer fiscal concerné par ce résultat de calcul. */
     private final FoyerFiscal foyerFiscal;
-
+    /** Abattement appliqué sur le revenu brut. */
     private int abattement;
+    /** Revenu fiscal de référence. */
     private int revenuFiscalReference;
+    /** Nombre de parts fiscales du foyer. */
     private double nbPartsFiscales;
+    /** Impôt brut cumulé des déclarants. */
     private double impotBrutDeclarants;
+    /** Impôt brut du foyer fiscal après parts fiscales. */
     private double impotBrutFoyer;
+    /** Impôt avant application de la décote. */
     private double impotAvantDecote;
+    /** Montant de la décote appliquée à l'impôt. */
     private double decote;
+    /** Contribution exceptionnelle sur les hauts revenus. */
     private double contributionExceptionnelle;
-
+    /** Montant final de l'impôt sur le revenu net. */
     private int impotNet;
 
     /**
@@ -201,23 +209,54 @@ public final class ResultatCalculImpot {
 
     @Override
     public String toString() {
-        String sb = "Résultat du calcul d'impôt:\n" +
-                "--------------------------------------------------\n" +
-                "Revenu net declarant1 : " + foyerFiscal.getRevenuNetDeclarant1() + "\n" +
-                "Revenu net declarant2 : " + foyerFiscal.getRevenuNetDeclarant2() + "\n" +
-                "Situation familiale : " + foyerFiscal.getSituationFamiliale() + "\n" +
-                "Abattement : " + abattement + "\n" +
-                "Revenu fiscal de référence : " + revenuFiscalReference + "\n" +
-                "Nombre d'enfants  : " + foyerFiscal.getNbEnfantsACharge() + "\n" +
-                "Nombre d'enfants handicapés : " + foyerFiscal.getNbEnfantsSituationHandicap() + "\n" +
-                "Parent isolé : " + foyerFiscal.isParentIsole() + "\n" +
-                "Nombre de parts : " + nbPartsFiscales + "\n" +
-                "Contribution exceptionnelle sur les hauts revenus : " + contributionExceptionnelle + "\n" +
-                "Impôt brut des déclarants : " + impotBrutDeclarants + "\n" +
-                "Impôt brut du foyer fiscal complet : " + impotBrutFoyer + "\n" +
-                "Impôt brut après plafonnement avant decote : " + impotAvantDecote + "\n" +
-                "Decote : " + decote + "\n" +
-                "Impôt sur le revenu net final : " + impotNet + "\n";
-        return sb;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Résultat du calcul d'impôt:\n");
+        sb.append("--------------------------------------------------\n");
+        sb.append("Revenu net declarant1 : ")
+            .append(foyerFiscal.getRevenuNetDeclarant1())
+            .append("\n");
+        sb.append("Revenu net declarant2 : ")
+            .append(foyerFiscal.getRevenuNetDeclarant2())
+            .append("\n");
+        sb.append("Situation familiale : ")
+            .append(foyerFiscal.getSituationFamiliale())
+            .append("\n");
+        sb.append("Abattement : ")
+            .append(abattement)
+            .append("\n");
+        sb.append("Revenu fiscal de référence : ")
+            .append(revenuFiscalReference)
+            .append("\n");
+        sb.append("Nombre d'enfants  : ")
+            .append(foyerFiscal.getNbEnfantsACharge())
+            .append("\n");
+        sb.append("Nombre d'enfants handicapés : ")
+            .append(foyerFiscal.getNbEnfantsSituationHandicap())
+            .append("\n");
+        sb.append("Parent isolé : ")
+            .append(foyerFiscal.isParentIsole())
+            .append("\n");
+        sb.append("Nombre de parts : ")
+            .append(nbPartsFiscales)
+            .append("\n");
+        sb.append("Contribution exceptionnelle sur les hauts revenus : ")
+            .append(contributionExceptionnelle)
+            .append("\n");
+        sb.append("Impôt brut des déclarants : ")
+            .append(impotBrutDeclarants)
+            .append("\n");
+        sb.append("Impôt brut du foyer fiscal complet : ")
+            .append(impotBrutFoyer)
+            .append("\n");
+        sb.append("Impôt brut après plafonnement avant decote : ")
+            .append(impotAvantDecote)
+            .append("\n");
+        sb.append("Decote : ")
+            .append(decote)
+            .append("\n");
+        sb.append("Impôt sur le revenu net final : ")
+            .append(impotNet)
+            .append("\n");
+        return sb.toString();
     }
 }

@@ -7,31 +7,27 @@ import com.kerware.simulateur2024.modele.SituationFamiliale;
 
 /**
  * Implémentation du calculateur d'impôt sur le revenu pour 2024.
- * Décompose le calcul de l'impôt en plusieurs étapes distinctes pour la maintenabilité.
+ * Décompose le calcul de l'impôt en plusieurs étapes distinctes pour la
+ * maintenabilité.
  */
 public final class CalculateurImpot2024 implements ICalculateurImpot2024 {
 
-    /**
-     * Constante pour le quotient familial d'un enfant.
-     */
+    /** Constante pour le quotient familial d'un enfant. */
     private static final double PART_UN_ENFANT = 0.5;
 
-    /**
-     * Constante pour la majoration des parts (parent isolé, enfant handicapé).
-     */
+    /** Constante pour la majoration des parts (parent isolé, enfant handicapé). */
     private static final double PART_MAJORATION = 0.5;
 
-    /**
-     * Constante pour la part d'un enfant à partir du 3ème.
-     */
+    /** Constante pour la part d'un enfant à partir du 3ème. */
     private static final double PART_ENFANT_SUPPLEMENTAIRE = 1.0;
 
-    /**
-     * Constante pour la majoration veuf avec enfants.
-     */
+    /** Constante pour la majoration veuf avec enfants. */
     private static final double PART_VEUF_AVEC_ENFANT = 1.0;
 
+    /** Barème fiscal utilisé pour le calcul. */
     private final BaremeFiscal baremeFiscal;
+
+    /** Résultat du dernier calcul effectué. */
     private ResultatCalculImpot resultatCalcul;
 
     /**
@@ -54,7 +50,8 @@ public final class CalculateurImpot2024 implements ICalculateurImpot2024 {
     public ResultatCalculImpot calculerImpot(final FoyerFiscal foyerFiscal) {
 
         if (!foyerFiscal.estValide()) {
-            throw new IllegalArgumentException("Le foyer fiscal n'est pas valide");
+            throw new IllegalArgumentException(
+                "Le foyer fiscal n'est pas valide");
         }
 
         resultatCalcul = new ResultatCalculImpot(foyerFiscal);
@@ -135,7 +132,8 @@ public final class CalculateurImpot2024 implements ICalculateurImpot2024 {
             nbParts += nbEnfants * PART_UN_ENFANT;
         } else {
             // À partir du 3ème enfant, chaque enfant -> 1 part
-            nbParts += PART_UN_ENFANT * 2 + PART_ENFANT_SUPPLEMENTAIRE * (nbEnfants - 2);
+            nbParts += PART_UN_ENFANT * 2
+                + PART_ENFANT_SUPPLEMENTAIRE * (nbEnfants - 2);
         }
 
         // Majoration pour parent isolé
@@ -164,7 +162,8 @@ public final class CalculateurImpot2024 implements ICalculateurImpot2024 {
                 || foyer.getSituationFamiliale() == SituationFamiliale.PACSE;
 
         double revenuFiscalReference = resultatCalcul.getRevenuFiscalReference();
-        double contributionExceptionnelle = baremeFiscal.calculerContributionExceptionnelle(
+        double contributionExceptionnelle =
+            baremeFiscal.calculerContributionExceptionnelle(
                 revenuFiscalReference, estCouple);
 
         resultatCalcul.setContributionExceptionnelle(Math.round(contributionExceptionnelle));
@@ -224,7 +223,7 @@ public final class CalculateurImpot2024 implements ICalculateurImpot2024 {
         // Plafond de réduction autorisé
         double ecartParts = nbPartsFiscales - nbPartsDeclarants;
         double plafondReduction = (ecartParts / PART_MAJORATION)
-                * baremeFiscal.getPlafonnementDemiPart();
+            * baremeFiscal.getPlafonnementDemiPart();
 
         // Plafonnement si nécessaire
         if (reductionImpot > plafondReduction) {
@@ -246,7 +245,8 @@ public final class CalculateurImpot2024 implements ICalculateurImpot2024 {
         boolean estCouple = foyer.getSituationFamiliale() == SituationFamiliale.MARIE
                 || foyer.getSituationFamiliale() == SituationFamiliale.PACSE;
 
-        double decote = baremeFiscal.calculerDecote(impotAvantDecote, estCouple);
+        double decote = baremeFiscal.calculerDecote(
+            impotAvantDecote, estCouple);
         resultatCalcul.setDecote(decote);
     }
 
@@ -259,7 +259,8 @@ public final class CalculateurImpot2024 implements ICalculateurImpot2024 {
         double contributionExceptionnelle = resultatCalcul.getContributionExceptionnelle();
 
         double impotApresDecote = impotAvantDecote - decote;
-        double impotNet = Math.round(impotApresDecote + contributionExceptionnelle);
+        double impotNet = Math.round(
+            impotApresDecote + contributionExceptionnelle);
 
         // Impossible d'avoir un impôt négatif
         resultatCalcul.setImpotNet((int) Math.max(0, impotNet));
