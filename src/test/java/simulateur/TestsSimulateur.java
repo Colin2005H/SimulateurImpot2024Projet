@@ -164,7 +164,6 @@ public abstract class TestsSimulateur {
         assertThrows( IllegalArgumentException.class, () -> { simulateur.calculImpotSurRevenuNet();} );
     }
 
-    // AVEC D'AUTRES IDEES DE TESTS
     // AVEC @ParameterizedTest et @CsvFileSource
     @DisplayName("Tests supplémentaires de cas variés de foyers fiscaux - ")
     @ParameterizedTest( name = " avec revenuNetDeclarant1={0}, revenuNetDeclarant2={1}, situationFamiliale={2}, nbEnfantsACharge={3}, nbEnfantsSituationHandicap={4}, parentIsole={5} - IMPOT NET ATTENDU = {6}")

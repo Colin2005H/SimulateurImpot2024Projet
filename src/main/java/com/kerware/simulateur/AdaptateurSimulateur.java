@@ -1,50 +1,85 @@
 package com.kerware.simulateur;
 
-public class AdaptateurSimulateur implements ICalculateurImpot {
+/**
+ * Adaptateur permettant d'utiliser le Simulateur d'impôt via l'interface 
+ * ICalculateurImpot.
+ */
+public final class AdaptateurSimulateur implements ICalculateurImpot {
 
+    /**
+     * Instance du simulateur utilisé par cet adaptateur.
+     */
     private Simulateur simulateur = new Simulateur();
 
+    /**
+     * Revenus nets du déclarant 1.
+     */
     private int revenusNetDecl1 = 0;
+
+    /**
+     * Revenus nets du déclarant 2.
+     */
     private int revenusNetDecl2 = 0;
+
+    /**
+     * Situation familiale du contribuable.
+     */
     private SituationFamiliale situationFamiliale;
+
+    /**
+     * Nombre d'enfants à charge.
+     */
     private int nbEnfantsACharge;
+
+    /**
+     * Nombre d'enfants en situation de handicap.
+     */
     private int nbEnfantsSituationHandicap;
+
+    /**
+     * Indique si le contribuable est parent isolé.
+     */
     private boolean parentIsole;
 
-
     @Override
-    public void setRevenusNetDeclarant1(int rn) {
+    public void setRevenusNetDeclarant1(final int rn) {
         this.revenusNetDecl1 = rn;
     }
 
     @Override
-    public void setRevenusNetDeclarant2(int rn) {
+    public void setRevenusNetDeclarant2(final int rn) {
         this.revenusNetDecl2 = rn;
     }
 
     @Override
-    public void setSituationFamiliale(SituationFamiliale sf) {
+    public void setSituationFamiliale(final SituationFamiliale sf) {
         this.situationFamiliale = sf;
     }
 
     @Override
-    public void setNbEnfantsACharge(int nbe) {
+    public void setNbEnfantsACharge(final int nbe) {
         this.nbEnfantsACharge = nbe;
     }
 
     @Override
-    public void setNbEnfantsSituationHandicap(int nbesh) {
+    public void setNbEnfantsSituationHandicap(final int nbesh) {
         this.nbEnfantsSituationHandicap = nbesh;
     }
 
     @Override
-    public void setParentIsole(boolean pi) {
+    public void setParentIsole(final boolean pi) {
         this.parentIsole = pi;
     }
 
     @Override
     public void calculImpotSurRevenuNet() {
-         simulateur.calculImpot(revenusNetDecl1, revenusNetDecl2 ,situationFamiliale, nbEnfantsACharge, nbEnfantsSituationHandicap, parentIsole);
+        simulateur.calculImpot(
+                revenusNetDecl1, 
+                revenusNetDecl2, 
+                situationFamiliale, 
+                nbEnfantsACharge, 
+                nbEnfantsSituationHandicap, 
+                parentIsole);
     }
 
     @Override
@@ -64,12 +99,12 @@ public class AdaptateurSimulateur implements ICalculateurImpot {
 
     @Override
     public int getRevenuFiscalReference() {
-        return (int)simulateur.getRevenuReference();
+        return (int) simulateur.getRevenuReference();
     }
 
     @Override
     public int getAbattement() {
-        return (int)simulateur.getAbattement();
+        return (int) simulateur.getAbattement();
     }
 
     @Override
@@ -79,16 +114,16 @@ public class AdaptateurSimulateur implements ICalculateurImpot {
 
     @Override
     public int getImpotAvantDecote() {
-        return (int)simulateur.getImpotAvantDecote();
+        return (int) simulateur.getImpotAvantDecote();
     }
 
     @Override
     public int getDecote() {
-        return (int)simulateur.getDecote();
+        return (int) simulateur.getDecote();
     }
 
     @Override
     public int getImpotSurRevenuNet() {
-        return (int)simulateur.getImpotNet();
+        return (int) simulateur.getImpotNet();
     }
 }
